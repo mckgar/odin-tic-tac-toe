@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.board {
+  height: min(80vh, 100vw);
+  width: min(80vh, 100vw);
+  background-color: black;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.position {
+  background-color: bisque;
+  text-align: center;
+}
+
+.piece-x::after {
+  color: blue;
+  content: "X";
+}
+
+.piece-o::after {
+  color: red;
+  content: "O";
+}
