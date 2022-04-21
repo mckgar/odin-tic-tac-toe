@@ -3,7 +3,9 @@ const gameBoard = (() => {
   let gameOver;
   let tie = false;
   let playerOne;
+  let playerOneAI;
   let playerTwo;
+  let playerTwoAI;
   let currentPlayer;
 
   const getCurrentPlayer = () => currentPlayer;
@@ -13,10 +15,26 @@ const gameBoard = (() => {
     gameOver = false;
     tie = false;
     _clearBoard();
+    if(playerOneAI) {
+      playerOne.makeMove();
+    }
   };
-  const createPlayers = (playerOneName, playerTwoName) => {
-    playerOne = player(playerOneName, "X");
-    playerTwo = player(playerTwoName, "O");
+  const createPlayers = (playerOneName, oneAi, playerTwoName, twoAi) => {
+    if(oneAi) {
+      playerOne = ai(playerOneName, "X");
+    }
+    else {
+      playerOne = player(playerOneName, "X");
+    }
+
+    if(twoAi) {
+      playerTwo = ai(playerTwoName, "O");
+    }
+    else {
+      playerTwo = player(playerTwoName, "O");
+    }
+    playerOneAI = oneAi;
+    playerTwoAI = twoAi;
     displayController.displayScores(playerOne, playerTwo);
   }
   const _clearBoard = () => {
@@ -24,23 +42,30 @@ const gameBoard = (() => {
       board[i] = '_';
     }
   };
-  const makeMove = (player, position) => {
+  /* Undo stop here */
+  const makeMove = (position) => {
     if(legalMove(position.id) && !gameOver) {
-      board[position.id] = player.getPiece();
-      displayController.makeMove(player, position);
+      board[position.id] = currentPlayer.getPiece();
+      displayController.makeMove(currentPlayer, position);
       if(_checkGameWon()) {
-        player.wonGame();
+        currentPlayer.wonGame();
         _endGame();
       }
       else if(_checkGameTie()) {
         _endGame();
       }
       else {
-        if(player.getPiece() == playerOne.getPiece()) {
+        if(currentPlayer.getPiece() == playerOne.getPiece()) {
           currentPlayer = playerTwo;
+          if(playerTwoAI) {
+            playerTwo.makeMove();
+          }
         } 
         else {
           currentPlayer = playerOne;
+          if(playerOneAI) {
+            playerOne.makeMove();
+          }
         }
       }
     }
@@ -101,8 +126,12 @@ const displayController = (() => {
   const submitBtn = document.querySelector("#submit");
 
   submitBtn.addEventListener("click", () => {
-    gameBoard.createPlayers(document.querySelector("#player-one-name").value,
-    document.querySelector("#player-two-name").value);
+    gameBoard.createPlayers(
+      document.querySelector("#player-one-name").value,
+      document.querySelector("#player-one-ai").checked,
+      document.querySelector("#player-two-name").value,
+      document.querySelector("#player-two-ai").checked
+    );
     document.querySelector(".setup").removeChild(document.querySelector(".player-creation"));
     const newStartBtn = document.createElement("button");
     newStartBtn.id = "start";
@@ -123,12 +152,16 @@ const displayController = (() => {
   
 
   spaces.forEach(space => space.addEventListener("click", () => {
-    gameBoard.makeMove(gameBoard.getCurrentPlayer(), space);
+    gameBoard.makeMove(space);
   }));
 
   const makeMove = (player, position) => {
     position.classList.add(player.getPiece());
   };
+
+  const getPosition = (id) => {
+    return document.getElementById(id);
+  }
 
   const displayWinner = (player) => {
     outcome.textContent = `${player.getName()} has won!`;
@@ -140,7 +173,7 @@ const displayController = (() => {
     playerOneScore.textContent = `${playerOne.getName()}: ${playerOne.getScore()}`;
     playerTwoScore.textContent = `${playerTwo.getName()}: ${playerTwo.getScore()}`;
   };
-  return {makeMove, displayWinner, displayTie, displayScores};
+  return {makeMove, displayWinner, displayTie, displayScores, getPosition};
 })();
 
 const player = (name, piece) => {
@@ -150,4 +183,20 @@ const player = (name, piece) => {
   const getScore = () => score;
   const wonGame = () => score++;
   return {getName, getPiece, getScore, wonGame};
+}
+
+const ai = (name, piece) => {
+  const prototype = player(name, piece);
+
+  const makeMove = () => {
+    while(true) {
+      let move = Math.floor(Math.random() * 9);
+      if(gameBoard.legalMove(move)) {
+        gameBoard.makeMove(displayController.getPosition(move));
+        break;
+      }
+    }
+  };
+
+  return Object.assign({}, prototype, {makeMove});
 }

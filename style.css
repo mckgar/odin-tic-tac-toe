@@ -49,12 +49,56 @@ body {
 
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  justify-items: center;
+  align-items: center;
+  gap: 5px
+}
+
+.player-one-name {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.player-one-ai {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.player-two-name {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.player-two-ai {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+#submit {
+  grid-column: 3;
+  grid-row: 2;
+
+  padding: 4px 12px;
 }
 
 input {
   border-radius: 7px;
   border: none;
   padding: 2px;
+}
+
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: 2px;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid gray;
+}
+
+input[type="checkbox"]:checked {
+  background-color: hsl(var(--hue), var(--saturation), calc(var(--light) - var(--light-change)));
 }
 
 button {
