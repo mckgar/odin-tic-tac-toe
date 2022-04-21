@@ -1,10 +1,14 @@
 const gameBoard = (() => {
   let board = [];
-  let initialGame = true;
+  let tie = false;
   let currentPlayer;
+
+  const getCurrentPlayer = () => currentPlayer;
   
-  const startGame = () => {
+  const startGame = (player) => {
+    currentPlayer = player;
     _clearBoard();
+    displayController.turnBoardOn();
   };
   const _clearBoard = () => {
     for(let i=0; i<9; i++) {
@@ -12,8 +16,9 @@ const gameBoard = (() => {
     }
   };
   const makeMove = (player, position) => {
-    if(legalMove(postion)) {
-      board[position] = player.getPiece();
+    if(legalMove(position.id)) {
+      board[position.id] = player.getPiece();
+      displayController.makeMove(player, position);
       if(_checkGameWon()) {
         player.wonGame();
         _endGame();
@@ -22,11 +27,11 @@ const gameBoard = (() => {
         _endGame();
       }
       else {
-        if(player.getPiece() == 'X') {
-          currentPlayer = 'O';
+        if(player.getPiece() == playerOne.getPiece()) {
+          currentPlayer = playerTwo;
         } 
         else {
-          currentPlayer = 'X';
+          currentPlayer = playerOne;
         }
       }
     }
@@ -36,23 +41,84 @@ const gameBoard = (() => {
   };
   const _checkGameWon = () => {
     return (
-      board[0] == board[1] == board[2] ||
-      board[3] == board[4] == board[5] ||
-      board[6] == board[7] == board[8] ||
-      board[0] == board[3] == board[6] ||
-      board[1] == board[4] == board[7] ||
-      board[2] == board[5] == board[8] ||
-      board[0] == board[4] == board[8] ||
-      board[2] == board[4] == board[6]
+      (board[0] != '_' && board[0] == board[1] && board[1] == board[2]) ||
+      (board[4] != '_' && board[3] == board[4] && board[4] == board[5]) ||
+      (board[6] != '_' && board[6] == board[7] && board[7] == board[8]) ||
+      (board[0] != '_' && board[0] == board[3] && board[3] == board[6]) ||
+      (board[1] != '_' && board[1] == board[4] && board[4] == board[7]) ||
+      (board[2] != '_' && board[2] == board[5] && board[5] == board[8]) ||
+      (board[0] != '_' && board[0] == board[4] && board[4] == board[8]) ||
+      (board[2] != '_' && board[2] == board[4] && board[4] == board[6])
     )
   };
   const _checkGameTie = () => {
     for(let i=0; i<9; i++) {
-      return !(board[i] == '_');
+      if(board[i] == '_') {
+        return false;
+      }
     }
+    tie = true;
     return true;
   };
-  return {startGame, makeMove, legalMove};
+  const _endGame = () => {
+    displayController.turnBoardOff();
+    if(tie) {
+      displayController.displayTie();
+    }
+    else {
+      displayController.displayWinner(currentPlayer);
+    }
+  };
+  const toString = () => {
+    let string = "";
+    for(let i = 0; i < board.length; i++) {
+      string += board[i];
+      if((i+1)%3==0) {
+        string += "\n"
+      }
+    }
+    return string;
+  };
+  return {startGame, makeMove, legalMove, getCurrentPlayer, toString};
+})();
+
+const displayController = (() => {
+  const spaces = document.querySelectorAll(".position");
+  const startBtn = document.querySelector("#start");
+  const outcome = document.querySelector("#outcome");
+
+  startBtn.addEventListener("click", () => {
+    spaces.forEach(space => {
+      space.classList.remove("X");
+      space.classList.remove("O");
+      outcome.textContent = "";
+    })
+    gameBoard.startGame(playerOne);
+  });
+
+  const turnBoardOn = () => {
+    spaces.forEach(space => space.addEventListener("click", () => {
+      gameBoard.makeMove(gameBoard.getCurrentPlayer(), space);
+    }));
+  };
+
+  const turnBoardOff = () => {
+    spaces.forEach(space => space.removeEventListener("click", () => {
+      gameBoard.makeMove(gameBoard.getCurrentPlayer(), space);
+    }));
+  };
+
+  const makeMove = (player, position) => {
+    position.classList.add(player.getPiece());
+  };
+
+  const displayWinner = (player) => {
+    outcome.textContent = `${player.getName()} has won!`;
+  };
+  const displayTie = () => {
+    outcome.textContent = "Tie!"
+  }
+  return {makeMove, turnBoardOn, turnBoardOff, displayWinner, displayTie};
 })();
 
 const player = (name, piece) => {
@@ -63,3 +129,6 @@ const player = (name, piece) => {
   const wonGame = () => score++;
   return {getName, getPiece, getScore, wonGame};
 }
+
+const playerOne = player("tester1", "X");
+const playerTwo = player("tester2", "O");
