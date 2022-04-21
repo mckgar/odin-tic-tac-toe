@@ -1,5 +1,6 @@
 const gameBoard = (() => {
   let board = [];
+  let gameOver;
   let tie = false;
   let currentPlayer;
 
@@ -7,8 +8,8 @@ const gameBoard = (() => {
   
   const startGame = (player) => {
     currentPlayer = player;
+    gameOver = false;
     _clearBoard();
-    displayController.turnBoardOn();
   };
   const _clearBoard = () => {
     for(let i=0; i<9; i++) {
@@ -16,7 +17,7 @@ const gameBoard = (() => {
     }
   };
   const makeMove = (player, position) => {
-    if(legalMove(position.id)) {
+    if(legalMove(position.id) && !gameOver) {
       board[position.id] = player.getPiece();
       displayController.makeMove(player, position);
       if(_checkGameWon()) {
@@ -61,7 +62,7 @@ const gameBoard = (() => {
     return true;
   };
   const _endGame = () => {
-    displayController.turnBoardOff();
+    gameOver = true;
     if(tie) {
       displayController.displayTie();
     }
@@ -96,17 +97,9 @@ const displayController = (() => {
     gameBoard.startGame(playerOne);
   });
 
-  const turnBoardOn = () => {
-    spaces.forEach(space => space.addEventListener("click", () => {
-      gameBoard.makeMove(gameBoard.getCurrentPlayer(), space);
-    }));
-  };
-
-  const turnBoardOff = () => {
-    spaces.forEach(space => space.removeEventListener("click", () => {
-      gameBoard.makeMove(gameBoard.getCurrentPlayer(), space);
-    }));
-  };
+  spaces.forEach(space => space.addEventListener("click", () => {
+    gameBoard.makeMove(gameBoard.getCurrentPlayer(), space);
+  }));
 
   const makeMove = (player, position) => {
     position.classList.add(player.getPiece());
@@ -118,7 +111,7 @@ const displayController = (() => {
   const displayTie = () => {
     outcome.textContent = "Tie!"
   }
-  return {makeMove, turnBoardOn, turnBoardOff, displayWinner, displayTie};
+  return {makeMove, displayWinner, displayTie};
 })();
 
 const player = (name, piece) => {
