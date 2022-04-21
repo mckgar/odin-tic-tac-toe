@@ -2,15 +2,23 @@ const gameBoard = (() => {
   let board = [];
   let gameOver;
   let tie = false;
+  let playerOne;
+  let playerTwo;
   let currentPlayer;
 
   const getCurrentPlayer = () => currentPlayer;
   
-  const startGame = (player) => {
-    currentPlayer = player;
+  const startGame = () => {
+    currentPlayer = playerOne;
     gameOver = false;
+    tie = false;
     _clearBoard();
   };
+  const createPlayers = (playerOneName, playerTwoName) => {
+    playerOne = player(playerOneName, "X");
+    playerTwo = player(playerTwoName, "O");
+    displayController.displayScores(playerOne, playerTwo);
+  }
   const _clearBoard = () => {
     for(let i=0; i<9; i++) {
       board[i] = '_';
@@ -63,6 +71,7 @@ const gameBoard = (() => {
   };
   const _endGame = () => {
     gameOver = true;
+    displayController.displayScores(playerOne, playerTwo);
     if(tie) {
       displayController.displayTie();
     }
@@ -80,22 +89,38 @@ const gameBoard = (() => {
     }
     return string;
   };
-  return {startGame, makeMove, legalMove, getCurrentPlayer, toString};
+  return {startGame, createPlayers, makeMove, legalMove, getCurrentPlayer, toString};
 })();
 
 const displayController = (() => {
   const spaces = document.querySelectorAll(".position");
-  const startBtn = document.querySelector("#start");
+  let startBtn;
   const outcome = document.querySelector("#outcome");
+  const playerOneScore = document.querySelector("#player-one-score");
+  const playerTwoScore = document.querySelector("#player-two-score");
+  const submitBtn = document.querySelector("#submit");
 
-  startBtn.addEventListener("click", () => {
-    spaces.forEach(space => {
-      space.classList.remove("X");
-      space.classList.remove("O");
-      outcome.textContent = "";
-    })
-    gameBoard.startGame(playerOne);
+  submitBtn.addEventListener("click", () => {
+    gameBoard.createPlayers(document.querySelector("#player-one-name").value,
+    document.querySelector("#player-two-name").value);
+    document.querySelector(".setup").removeChild(document.querySelector(".player-creation"));
+    const newStartBtn = document.createElement("button");
+    newStartBtn.id = "start";
+    newStartBtn.textContent = "Start New Game";
+    document.querySelector(".setup").appendChild(newStartBtn);
+    startBtn = document.querySelector("#start");
+
+    startBtn.addEventListener("click", () => {
+      spaces.forEach(space => {
+        space.classList.remove("X");
+        space.classList.remove("O");
+        outcome.textContent = "";
+      })
+      gameBoard.startGame();
+    });
+    gameBoard.startGame();
   });
+  
 
   spaces.forEach(space => space.addEventListener("click", () => {
     gameBoard.makeMove(gameBoard.getCurrentPlayer(), space);
@@ -110,8 +135,12 @@ const displayController = (() => {
   };
   const displayTie = () => {
     outcome.textContent = "Tie!"
-  }
-  return {makeMove, displayWinner, displayTie};
+  };
+  const displayScores = (playerOne, playerTwo) => {
+    playerOneScore.textContent = `${playerOne.getName()}: ${playerOne.getScore()}`;
+    playerTwoScore.textContent = `${playerTwo.getName()}: ${playerTwo.getScore()}`;
+  };
+  return {makeMove, displayWinner, displayTie, displayScores};
 })();
 
 const player = (name, piece) => {
@@ -122,6 +151,3 @@ const player = (name, piece) => {
   const wonGame = () => score++;
   return {getName, getPiece, getScore, wonGame};
 }
-
-const playerOne = player("tester1", "X");
-const playerTwo = player("tester2", "O");

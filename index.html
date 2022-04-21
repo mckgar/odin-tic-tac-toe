@@ -9,7 +9,20 @@
   <script src="tic-tac-toe.js" defer></script>
 </head>
 <body>
-  <button id="start">Start Game</button>
+  <div class="setup">
+    <!-- <button id="start">Start Game</button> -->
+    <div class="player-creation">
+      <div class="item">
+        <label for="player-one-name">Player X Name</label> <br>
+        <input type="text" name="player-one-name" id="player-one-name">
+      </div>
+      <div class="item">
+        <label for="player-two-name">Player O Name</label>
+        <input type="text" name="player-two-name" id="player-two-name">
+      </div>
+      <button id="submit">Submit</button>
+    </div>
+  </div>
   <div id="board">
     <div id="0" class="position"></div>
     <div id="1" class="position"></div>
@@ -21,6 +34,10 @@
     <div id="7" class="position"></div>
     <div id="8" class="position"></div>
   </div>
-  <div id="outcome"></div>
+  <div class="outcome-panel">
+    <div id="player-one-score"></div>
+    <div id="outcome"></div>
+    <div id="player-two-score"></div>
+  </div>
 </body>
 </html>
