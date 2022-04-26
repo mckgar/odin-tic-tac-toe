@@ -258,12 +258,20 @@ const ai = (name, piece, difficulty) => {
           bestScore = pair[1];
           bestMove = pair[0];
         }
+        else if(pair[1] == bestScore && (Math.random() * 5) > 4) {
+          bestScore = pair[1];
+          bestMove = pair[0];
+        }
       }
     }
     else {
       bestScore = Infinity;
       for(let pair of scores.entries()) {
         if(pair[1] < bestScore) {
+          bestScore = pair[1];
+          bestMove = pair[0];
+        }
+        else if(pair[1] == bestScore && (Math.random() * 5) > 4) {
           bestScore = pair[1];
           bestMove = pair[0];
         }
