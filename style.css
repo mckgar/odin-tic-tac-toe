@@ -33,12 +33,12 @@ body {
   padding: 10px 10px;
   width: min(80vh, 100vw);
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 15px;
 }
 
 #start {
-  grid-column: 2;
+  grid-column: 2 / 4;
   grid-row: 1;
 }
 
@@ -65,6 +65,11 @@ body {
   grid-row: 1;
 }
 
+.player-one-ai-difficulty {
+  grid-column: 3;
+  grid-row: 1;
+}
+
 .player-two-name {
   grid-column: 1;
   grid-row: 2;
@@ -74,18 +79,24 @@ body {
   grid-column: 2;
   grid-row: 2;
 }
+.player-two-ai-difficulty {
+  grid-column: 3;
+  grid-row: 2;
+}
 
 #submit {
-  grid-column: 3;
+  grid-column: 4;
   grid-row: 2;
 
   padding: 4px 12px;
 }
 
-input {
+input,
+select {
   border-radius: 7px;
   border: none;
   padding: 2px;
+  background-color: rgb(231, 231, 231);
 }
 
 input[type="checkbox"] {
@@ -94,7 +105,8 @@ input[type="checkbox"] {
   margin-top: 2px;
   width: 1rem;
   height: 1rem;
-  border: 1px solid gray;
+  border: 2px solid rgb(94, 94, 94);
+  border-radius: 100%;
 }
 
 input[type="checkbox"]:checked {

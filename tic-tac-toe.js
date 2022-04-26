@@ -7,6 +7,8 @@ const gameBoard = (() => {
   let playerTwo;
   let playerTwoAI;
   let currentPlayer;
+  let playerOneAIDifficulty;
+  let playerTwoAIDifficulty;
 
   const getCurrentPlayer = () => currentPlayer;
   const getBoard = () => {
@@ -26,16 +28,16 @@ const gameBoard = (() => {
       playerOne.makeMove();
     }
   };
-  const createPlayers = (playerOneName, oneAi, playerTwoName, twoAi) => {
+  const createPlayers = (playerOneName, oneAi, oneDifficulty, playerTwoName, twoAi, twoDifficulty) => {
     if(oneAi) {
-      playerOne = ai(playerOneName, "X");
+      playerOne = ai(playerOneName, "X", oneDifficulty);
     }
     else {
       playerOne = player(playerOneName, "X");
     }
 
     if(twoAi) {
-      playerTwo = ai(playerTwoName, "O");
+      playerTwo = ai(playerTwoName, "O", twoDifficulty);
     }
     else {
       playerTwo = player(playerTwoName, "O");
@@ -49,7 +51,7 @@ const gameBoard = (() => {
       board[i] = '_';
     }
   };
-  /* Undo stop here */
+  
   const makeMove = (position) => {
     if(legalMove(position.id) && !gameOver) {
       board[position.id] = currentPlayer.getPiece();
@@ -65,13 +67,13 @@ const gameBoard = (() => {
         if(currentPlayer.getPiece() == playerOne.getPiece()) {
           currentPlayer = playerTwo;
           if(playerTwoAI) {
-            playerTwo.makeMove(playerOne.getPiece());
+            playerTwo.makeMove(playerOne.getPiece(), playerTwoAIDifficulty);
           }
         } 
         else {
           currentPlayer = playerOne;
           if(playerOneAI) {
-            playerOne.makeMove(playerTwo.getPiece());
+            playerOne.makeMove(playerTwo.getPiece(), playerOneAIDifficulty);
           }
         }
       }
@@ -126,8 +128,10 @@ const displayController = (() => {
     gameBoard.createPlayers(
       document.querySelector("#player-one-name").value,
       document.querySelector("#player-one-ai").checked,
+      document.querySelector("#player-one-ai-difficulty").value,
       document.querySelector("#player-two-name").value,
-      document.querySelector("#player-two-ai").checked
+      document.querySelector("#player-two-ai").checked,
+      document.querySelector("#player-two-ai-difficulty").value
     );
     document.querySelector(".setup").removeChild(document.querySelector(".player-creation"));
     const newStartBtn = document.createElement("button");
@@ -182,12 +186,22 @@ const player = (name, piece) => {
   return {getName, getPiece, getScore, wonGame};
 }
 
-const ai = (name, piece) => {
+const ai = (name, piece, difficulty) => {
   const prototype = player(name, piece);
 
   const makeMove = (opponent) => {
-    /* let move = __randomMove(); */
-    let move = __minimax(0, 3, gameBoard.getBoard(), opponent, true, prototype.getPiece())[0];
+    let move;
+    
+    if(difficulty == 2) {
+      move = __minimax(0, difficulty, gameBoard.getBoard(), opponent, true, prototype.getPiece())[0];
+    }
+    else if(difficulty == 9) {
+      move = __minimax(0, difficulty, gameBoard.getBoard(), opponent, true, prototype.getPiece())[0];
+    }
+    else {
+      move = __randomMove();
+    }
+
     if(gameBoard.legalMove(move)) {
       gameBoard.makeMove(displayController.getPosition(move));
     }

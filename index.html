@@ -20,13 +20,27 @@
           <label for="player-one-ai">Player X AI?</label> <br>
           <input type="checkbox" name="player-one-ai" id="player-one-ai">
         </div>
+        <div class="item player-one-ai-difficulty">
+          <select name="player-one-ai-difficulty" id="player-one-ai-difficulty">
+            <option value="1">Easy</option>
+            <option value="2">Hard</option>
+            <option value="9">God</option>
+          </select>
+        </div>
         <div class="item player-two-name">
           <label for="player-two-name">Player O Name</label> <br>
           <input type="text" name="player-two-name" id="player-two-name">
         </div>
         <div class="item player-two-ai">
           <label for="player-two-ai">Player O AI?</label> <br>
-          <input type="checkbox" name="player-two-ai" id="player-two-ai">
+          <input type="checkbox" name="player-two-ai" id="player-two-ai" checked>
+        </div>
+        <div class="item player-two-ai-difficulty">
+          <select name="player-two-ai-difficulty" id="player-two-ai-difficulty">
+            <option value="1">Easy</option>
+            <option value="2">Hard</option>
+            <option value="9">God</option>
+          </select>
         </div>
         <button id="submit">Submit</button>
       </div>
